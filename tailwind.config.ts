@@ -13,7 +13,16 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        display: ["Space Grotesk", "sans-serif"],
+        mono: ["DM Mono", "monospace"],
+      },
       colors: {
+        coldveg: {
+          ink: "#061311",
+          lime: "#b9f35b",
+          mint: "#64dcb4",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

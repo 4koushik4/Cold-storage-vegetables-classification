@@ -1,7 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import { handleDemo } from "./routes/demo";
+import { handleDetection, handleHealth, handleVegetables } from "./routes/detection";
 
 export function createServer() {
   const app = express();
@@ -18,6 +20,9 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+  app.get("/api/v1/health", handleHealth);
+  app.get("/api/v1/vegetables", handleVegetables);
+  app.post("/api/v1/detect", multer({ limits: { fileSize: 10 * 1024 * 1024 }, storage: multer.memoryStorage() }).single("image"), handleDetection);
 
   return app;
 }
