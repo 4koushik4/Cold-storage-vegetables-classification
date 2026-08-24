@@ -80,7 +80,13 @@ export default function Index() {
       body.append("image", image);
       body.append("source", mode);
       const response = await fetch("/api/v1/detect", { method: "POST", body });
-      const data = (await response.json()) as Result;
+      const raw = await response.text();
+      let data: Result;
+      try {
+        data = JSON.parse(raw) as Result;
+      } catch {
+        throw new Error(response.ok ? "Unexpected response from detection service." : `Detection service returned ${response.status}.`);
+      }
       if (!response.ok) throw new Error(data.message || "Unable to analyze image");
       setResult(data);
     } catch (error) {
