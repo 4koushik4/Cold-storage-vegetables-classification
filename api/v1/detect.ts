@@ -2,10 +2,9 @@ import type { Request, Response } from "express";
 
 export default async function handler(request: Request, response: Response) {
   try {
-    const [{ default: multer }, { handleDetection }] = await Promise.all([
-      import("multer"),
-      import("../../server/routes/detection"),
-    ]);
+    const multerModule = await import("multer");
+    const multer = (multerModule.default ?? multerModule) as any;
+    const { handleDetection } = await import("../../server/routes/detection");
     const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 }, storage: multer.memoryStorage() }).single("image");
     await new Promise<void>((resolve, reject) => {
       upload(request, response, (error) => (error ? reject(error) : resolve()));
