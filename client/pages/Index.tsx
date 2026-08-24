@@ -44,6 +44,7 @@ export default function Index() {
     setFile(chosen);
     setPreview(URL.createObjectURL(chosen));
     setResult(null);
+    void analyze(chosen);
   };
 
   const capture = () => {
@@ -70,13 +71,13 @@ export default function Index() {
     setCameraError(null);
   };
 
-  const analyze = async () => {
-    if (!file) return;
+  const analyze = async (image = file) => {
+    if (!image) return;
     setLoading(true);
     setResult(null);
     try {
       const body = new FormData();
-      body.append("image", file);
+      body.append("image", image);
       const response = await fetch("/api/v1/detect", { method: "POST", body });
       const data = (await response.json()) as Result;
       if (!response.ok) throw new Error(data.message || "Unable to analyze image");
@@ -118,7 +119,7 @@ export default function Index() {
               <div className="scan-corners pointer-events-none absolute inset-8 z-20" />{(stream || preview) && <div className="scan-line pointer-events-none absolute inset-x-7 z-20" />}
               {mode === "photo" && !preview && <button onClick={() => inputRef.current?.click()} onDragEnter={() => setDragging(true)} onDragLeave={() => setDragging(false)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); setDragging(false); chooseFile(event.dataTransfer.files[0] ?? null); }} className={`absolute inset-6 z-30 rounded-2xl border border-dashed transition ${dragging ? "border-[#b9f35b] bg-[#b9f35b]/10" : "border-white/15 hover:border-[#b9f35b]/50"}`}><span className="sr-only">Upload image</span></button>}
               {stream && !preview && <div className="absolute bottom-5 left-1/2 z-30 -translate-x-1/2"><button onClick={capture} className="grid h-16 w-16 place-items-center rounded-full border-4 border-white/80 bg-[#b9f35b] text-[#092119] shadow-[0_0_0_8px_rgba(185,243,91,0.14)] transition hover:scale-105"><ScanLine size={24} /></button></div>}
-              {preview && <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 gap-2"><button onClick={reset} className="flex items-center gap-2 rounded-full border border-white/20 bg-black/50 px-4 py-3 text-xs font-bold backdrop-blur-md"><RotateCcw size={14} /> RETAKE</button><button onClick={analyze} disabled={loading} className="flex items-center gap-2 rounded-full bg-[#b9f35b] px-5 py-3 text-xs font-bold text-[#092119] shadow-lg disabled:opacity-60">{loading ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />} {loading ? "ANALYZING" : mode === "camera" ? "CAPTURE & ANALYZE" : "ANALYZE IMAGE"}</button></div>}
+              {preview && loading && <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-5 py-3 text-xs font-bold tracking-wide backdrop-blur-md"><Loader2 size={14} className="animate-spin text-[#b9f35b]" /> ANALYZING IMAGE</div>}
             </div>
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(event) => chooseFile(event.target.files?.[0] ?? null)} /><canvas ref={canvasRef} className="hidden" />
             <div className="flex items-center justify-between px-3 pb-1 pt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30"><span className="flex items-center gap-2"><ShieldCheck size={13} className="text-[#64dcb4]" /> Only approved vegetables accepted</span><span>Threshold 70%</span></div>
