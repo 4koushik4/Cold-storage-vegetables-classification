@@ -1,9 +1,8 @@
 import type { RequestHandler } from "express";
 
 export const APPROVED_COLD_STORAGE_VEGETABLES = new Set([
-  "Tomato", "Carrot", "Broccoli", "Potato", "Onion", "Cucumber", "Cabbage", "Mushroom",
-  "Eggplant", "Lettuce", "Garlic", "Pepper", "Pumpkin", "Asparagus", "Beetroot", "Chilli",
-  "Green Beans", "Green Pepper", "Red Cabbage", "Red Onion", "Red Pepper", "Yellow Pepper",
+  "Tomato", "Carrot", "Broccoli", "Potato", "Cucumber", "Cauliflower", "Cabbage", "Pumpkin",
+  "Bean", "Papaya", "Bitter_Gourd", "Bottle_Gourd", "Brinjal", "Ca psicum", "Radish",
 ]);
 
 const CONFIDENCE_THRESHOLD = 0.7;
