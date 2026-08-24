@@ -23,6 +23,11 @@ export function createServer() {
   app.get("/api/v1/health", handleHealth);
   app.get("/api/v1/vegetables", handleVegetables);
   app.post("/api/v1/detect", multer({ limits: { fileSize: 10 * 1024 * 1024 }, storage: multer.memoryStorage() }).single("image"), handleDetection);
+  app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    if (res.headersSent) return;
+    console.error("API request failed", error);
+    res.status(400).json({ success: false, message: "Unable to process this request." });
+  });
 
   return app;
 }
