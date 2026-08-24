@@ -44,6 +44,21 @@ async function detectWithRoboflow(image: Express.Multer.File): Promise<Normalize
   return normalizePrediction(predictions.sort((a, b) => Number(b.confidence) - Number(a.confidence))[0]);
 }
 
+function parseGroqPrediction(content: string): Prediction {
+  const start = content.indexOf("{");
+  const end = content.lastIndexOf("}");
+  if (start >= 0 && end > start) {
+    try {
+      return JSON.parse(content.slice(start, end + 1)) as Prediction;
+    } catch {
+      return {};
+    }
+  }
+  const detectedClass = [...APPROVED_COLD_STORAGE_VEGETABLES].find((item) => normalizeClassName(content).includes(normalizeClassName(item)));
+  const confidence = content.match(/(?:confidence|probability)[^0-9]*(0(?:\.\d+)?|1(?:\.0+)?)/i)?.[1];
+  return { class: detectedClass, confidence: confidence ? Number(confidence) : 0 };
+}
+
 async function detectWithGroq(image: Express.Multer.File): Promise<NormalizedResult> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error("Groq service is not configured.");
@@ -55,7 +70,6 @@ async function detectWithGroq(image: Express.Multer.File): Promise<NormalizedRes
       model: GROQ_MODEL_ID,
       temperature: 0,
       max_tokens: 80,
-      response_format: { type: "json_object" },
       messages: [{ role: "user", content: [
         { type: "text", text: "Identify the single most prominent vegetable in this image. Return JSON only: {\"class\": string|null, \"confidence\": number}. Use the visible class name and a confidence from 0 to 1. If it is not clearly a vegetable, return null and 0." },
         { type: "image_url", image_url: { url: imageData } },
@@ -68,8 +82,7 @@ async function detectWithGroq(image: Express.Multer.File): Promise<NormalizedRes
   }
   const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
   const content = payload.choices?.[0]?.message?.content ?? "{}";
-  const prediction = JSON.parse(content) as Prediction;
-  return normalizePrediction(prediction);
+  return normalizePrediction(parseGroqPrediction(content));
 }
 
 export const handleDetection: RequestHandler = async (req, res) => {
