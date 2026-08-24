@@ -7,7 +7,7 @@ export const APPROVED_COLD_STORAGE_VEGETABLES = new Set([
 ]);
 
 const CONFIDENCE_THRESHOLD = 0.7;
-const MODEL_ID = "vegetables-mmdn7/3";
+const MODEL_ID = process.env.ROBOFLOW_MODEL_ID ?? "vegetables-mmdn7/3";
 
 type RoboflowPrediction = { class?: string; confidence?: number };
 
