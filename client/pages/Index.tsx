@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Camera, Check, ChevronRight, CloudUpload, Leaf, Loader2, RotateCcw, ScanLine, ShieldCheck, Sparkles, Upload, Video, X, Zap } from "lucide-react";
+import { Camera, Check, ChevronRight, CloudUpload, Leaf, Loader2, RotateCcw, ScanLine, ShieldCheck, Upload, X, Zap } from "lucide-react";
 import { getVegetableConfig } from "@/config/vegetables";
 
 type Result = { detected: boolean; error?: boolean; vegetable?: string | null; confidence?: number; message?: string };
@@ -109,7 +109,7 @@ export default function Index() {
       </header>
 
       <section className="relative mx-auto max-w-7xl px-5 pb-14 pt-7 sm:px-8 lg:px-12 lg:pt-14">
-        <div className="mb-10 max-w-2xl"><div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[#64dcb4]"><Sparkles size={14} /> Computer vision for fresh inventory</div><h1 className="font-display text-4xl font-bold leading-[1.04] tracking-tight sm:text-6xl">See what’s fresh.<br /><span className="text-[#b9f35b]">Store it smarter.</span></h1><p className="mt-5 max-w-lg text-sm leading-6 text-white/55 sm:text-base">Instantly identify cold-storage vegetables with a private, purpose-built vision model.</p></div>
+        <div className="mb-10 max-w-2xl"><h1 className="font-display text-4xl font-bold leading-[1.04] tracking-tight sm:text-6xl">See what’s fresh.<br /><span className="text-[#b9f35b]">Store it smarter.</span></h1></div>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="rounded-[28px] border border-white/10 bg-white/[0.045] p-2 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-3">
@@ -130,7 +130,6 @@ export default function Index() {
           </aside>
         </div>
       </section>
-      <footer className="relative mx-auto flex max-w-7xl items-center justify-between border-t border-white/8 px-5 py-5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/25 sm:px-8 lg:px-12"><span>ColdVeg intelligence platform</span><span className="flex items-center gap-2"><Video size={13} /> Secure inference</span></footer>
     </main>
   );
 }
