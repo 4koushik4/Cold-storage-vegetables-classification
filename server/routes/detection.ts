@@ -7,7 +7,7 @@ export const APPROVED_COLD_STORAGE_VEGETABLES = new Set([
 
 const CONFIDENCE_THRESHOLD = 0.7;
 const MODEL_ID = process.env.ROBOFLOW_MODEL_ID ?? "vegetable-classification-t6t4d/1";
-const GROQ_MODEL_ID = "meta-llama/llama-4-scout-17b-16e-instruct";
+const GROQ_MODEL_ID = "qwen/qwen3.6-27b";
 
 type Prediction = { class?: string; confidence?: number };
 type NormalizedResult = { success: true; detected: boolean; vegetable: string | null; confidence: number; coldStorageCrop?: true; message?: string; reason?: string };
@@ -62,7 +62,10 @@ async function detectWithGroq(image: Express.Multer.File): Promise<NormalizedRes
       ] }],
     }),
   });
-  if (!response.ok) throw new Error(`Groq responded with ${response.status}`);
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Groq responded with ${response.status}: ${detail.slice(0, 240)}`);
+  }
   const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
   const content = payload.choices?.[0]?.message?.content ?? "{}";
   const prediction = JSON.parse(content) as Prediction;
