@@ -1,18 +1,15 @@
 import type { Request, Response } from "express";
-import multer from "multer";
-import { handleDetection } from "../../server/routes/detection";
-
-const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 }, storage: multer.memoryStorage() }).single("image");
-
-function parseUpload(request: Request, response: Response) {
-  return new Promise<void>((resolve, reject) => {
-    upload(request, response, (error) => (error ? reject(error) : resolve()));
-  });
-}
 
 export default async function handler(request: Request, response: Response) {
   try {
-    await parseUpload(request, response);
+    const [{ default: multer }, { handleDetection }] = await Promise.all([
+      import("multer"),
+      import("../../server/routes/detection"),
+    ]);
+    const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 }, storage: multer.memoryStorage() }).single("image");
+    await new Promise<void>((resolve, reject) => {
+      upload(request, response, (error) => (error ? reject(error) : resolve()));
+    });
     await handleDetection(request, response, () => undefined);
   } catch (error) {
     console.error("Vercel detection request failed", error);
