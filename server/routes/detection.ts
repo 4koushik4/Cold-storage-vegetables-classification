@@ -25,7 +25,13 @@ function normalizePrediction(prediction?: Prediction): NormalizedResult {
 }
 
 export const handleHealth: RequestHandler = (_req, res) => {
-  res.json({ status: "ok", model: MODEL_ID, cameraProvider: GROQ_MODEL_ID });
+  res.json({
+    status: "ok",
+    model: MODEL_ID,
+    cameraProvider: GROQ_MODEL_ID,
+    roboflowConfigured: Boolean(process.env.ROBOFLOW_API_KEY),
+    groqConfigured: Boolean(process.env.GROQ_API_KEY),
+  });
 };
 
 export const handleVegetables: RequestHandler = (_req, res) => {
@@ -97,6 +103,9 @@ export const handleDetection: RequestHandler = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error(`${source} detection failed`, error);
-    res.status(502).json({ success: false, message: "Unable to analyze this image right now." });
+    const message = error instanceof Error && (error.message === "Roboflow service is not configured." || error.message === "Groq service is not configured.")
+      ? error.message
+      : "Unable to analyze this image right now.";
+    res.status(502).json({ success: false, message });
   }
 };
